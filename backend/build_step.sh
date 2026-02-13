@@ -2,10 +2,10 @@
 set -e
 
 echo "Cleaning old dist..."
-rm -rf backend/dist
+rm -rf dist
 
 echo "Building frontend..."
-cd frontend
+cd ../frontend
 npm run build
 
 echo "Copying build output to backend..."
