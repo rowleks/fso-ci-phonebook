@@ -1,8 +1,14 @@
 #!/bin/bash
-set -e  # exit on error
+set -e
 
-echo "Starting build..."
+echo "Cleaning old dist..."
+rm -rf backend/dist
 
-pnpm run build:ui
+echo "Building frontend..."
+cd frontend
+npm run build
+
+echo "Copying build output to backend..."
+cp -r dist ../backend/
 
 echo "Build completed successfully!"

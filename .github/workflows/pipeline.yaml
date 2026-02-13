@@ -17,16 +17,17 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
       - name: Install backend dependencies
         working-directory: backend
-        run: pnpm install
+        run: npm install
 
       - name: Install frontend dependencies
         working-directory: frontend
-        run: pnpm install
+        run: npm install
+
+      - name: Make build script executable
+        working-directory: backend
+        run: chmod +x build_step.sh
 
       - name: Build application
         working-directory: backend
