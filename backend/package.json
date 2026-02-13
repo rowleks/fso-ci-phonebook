@@ -8,7 +8,7 @@
     "dev": "node --watch index.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "build:ui": "shx rm -rf dist && cd ../phonebook && pnpm run build && shx cp -r dist ../phonebook-backend",
+    "build:ui": "shx rm -rf dist && cd ../frontend && pnpm run build && shx cp -r dist ../backend",
     "deploy:full": "pnpm run build:ui && git add . && git commit -m \"Build and Deploy\" && git push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
