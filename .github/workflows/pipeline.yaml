@@ -12,26 +12,24 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Install backend dependencies
-        working-directory: backend
-        run: npm install
-
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm install
-
-      - name: Make build script executable
-        working-directory: backend
-        run: chmod +x build_step.sh
+          cache: "pnpm"
+          cache-dependency-path: "**/pnpm-lock.yaml"
 
       - name: Build application
         working-directory: backend
-        run: ./build_step.sh
+        run: |
+          chmod +x build_step.sh
+          ./build_step.sh
 
       - name: Trigger deployment
+        if: success()
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
