@@ -2,8 +2,10 @@ name: Deploy App to Render
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
 
 jobs:
   build-and-deploy:
@@ -31,5 +33,6 @@ jobs:
           ./build_step.sh
 
       - name: Trigger deployment
-        if: success()
+        if: ${{ github.ref == 'refs/heads/main' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+
