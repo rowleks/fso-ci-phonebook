@@ -12,8 +12,8 @@ const create = (newObject) => {
   return req.then((res) => res.data);
 };
 
-const deleteById = (id, deletedObject) => {
-  const req = axios.delete(`${BASEURL}/${id}`, deletedObject);
+const deleteById = (id) => {
+  const req = axios.delete(`${BASEURL}/${id}`);
   return req.then((res) => res.data);
 };
 
