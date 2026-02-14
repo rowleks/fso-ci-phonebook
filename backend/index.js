@@ -32,6 +32,11 @@ const updatePerson = (id, name, number) => {
   })
 }
 
+//Health check
+app.get('/api/health', (req, res) => {
+  res.send('ok')
+})
+
 app.get('/api/persons', (_, res) => {
   Person.find({}).then(persons => {
     return res.json(persons)
