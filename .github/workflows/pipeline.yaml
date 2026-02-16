@@ -7,9 +7,14 @@ on:
     branches: [main]
     types: [opened, synchronize]
 
+env:
+  CONDITION: ${{ contains(toLower(join(github.event_commits.*.message, ' ')), '#skip') && github.ref == 'refs/heads/main' }}
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    outputs:
+      deploy_triggered: ${{ steps.deploy.outcome == 'success' }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -33,19 +38,20 @@ jobs:
           ./build_step.sh
 
       - name: Trigger deployment
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ env.CONDITION == 'true' }}
+        id: deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
 
   tag_release:
     needs: build-and-deploy
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ needs.build-and-deploy.outputs.deploy_triggered == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Github Tag Bump
-        uses: anothrNick/github-tag-action@1.75.0
+        uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_PREFIX: "v"
