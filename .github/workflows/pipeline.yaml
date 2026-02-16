@@ -32,6 +32,12 @@ jobs:
           chmod +x build_step.sh
           ./build_step.sh
 
+      - name: Github Tag Bump
+        uses: anothrNick/github-tag-action@1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_PREFIX: "v"
+
       - name: Trigger deployment
         if: ${{ github.ref == 'refs/heads/main' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
