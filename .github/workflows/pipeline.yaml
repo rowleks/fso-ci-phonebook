@@ -8,7 +8,7 @@ on:
     types: [opened, synchronize]
 
 env:
-  CONDITION: ${{ contains(toLower(join(github.event_commits.*.message, ' ')), '#skip') && github.ref == 'refs/heads/main' }}
+  CONDITION: ${{ github.ref == 'refs/heads/main' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
 
 jobs:
   build-and-deploy:
