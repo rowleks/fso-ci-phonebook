@@ -40,9 +40,9 @@ jobs:
       - name: Format failure timestamp
         if: failure()
         id: ts_failure
-        run: echo "formatted=$(date '+%d %B %Y %H:%M:%S')" >> $GITHUB_OUTPUT
+        run: echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
 
-      - name: Failure Notification
+      - name: Failure Notify (Embed)
         if: failure()
         uses: rjstone/discord-webhook-notify@v2
         with:
@@ -51,7 +51,7 @@ jobs:
           color: "#ff0000"
           title: "Deployment Failed"
           description: "commit ${{ github.event.head_commit.url }} by ${{ github.event.head_commit.author.username }} broke the build"
-          footer: "${{ steps.ts_failure.outputs.formatted }}"
+          footer: "<t:${{ steps.ts_failure.outputs.timestamp }}:R>"
 
       - name: Trigger deployment
         if: ${{ env.CONDITION == 'true' }}
@@ -77,9 +77,9 @@ jobs:
 
       - name: Format timestamp
         id: ts
-        run: echo "formatted=$(date '+%d %B %Y %H:%M:%S')" >> $GITHUB_OUTPUT
+        run: echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
 
-      - name: Success Notification
+      - name: Success Notify (Embed)
         uses: rjstone/discord-webhook-notify@v2
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
@@ -89,4 +89,4 @@ jobs:
           description: |
             Version: ${{ steps.bump.outputs.new_tag }}
             Commit: ${{ github.event.head_commit.url }}
-          footer: "${{ steps.ts.outputs.formatted }}"
+          footer: "<t:${{ steps.ts.outputs.timestamp }}:R>"
