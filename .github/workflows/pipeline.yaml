@@ -37,21 +37,15 @@ jobs:
           chmod +x build_step.sh
           ./build_step.sh
 
-      - name: Format failure timestamp
+      - name: Failure Notify (Discord)
         if: failure()
-        id: ts_failure
-        run: echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
-
-      - name: Failure Notify (Embed)
-        if: failure()
-        uses: rjstone/discord-webhook-notify@v2
+        uses: sarisia/actions-status-discord@v1
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          severity: error
-          color: "#ff0000"
-          title: "Deployment Failed"
-          description: "commit ${{ github.event.head_commit.url }} by ${{ github.event.head_commit.author.username }} broke the build"
-          footer: "<t:${{ steps.ts_failure.outputs.timestamp }}:R>"
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "Build & Test Failed"
+          description: "Commit ${{ github.event.head_commit.url }} by ${{ github.event.head_commit.author.username }} broke the build."
+          color: 0xff0000
 
       - name: Trigger deployment
         if: ${{ env.CONDITION == 'true' }}
@@ -75,18 +69,13 @@ jobs:
           TAG_PREFIX: "v"
           DEFAULT_BUMP: "patch"
 
-      - name: Format timestamp
-        id: ts
-        run: echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
-
-      - name: Success Notify (Embed)
-        uses: rjstone/discord-webhook-notify@v2
+      - name: Success Notify (Discord)
+        uses: sarisia/actions-status-discord@v1
+        if: success()
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          severity: info
-          color: "#28a745"
-          title: "A new version of phonebook has been deployed!"
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "A New version of phonebook has been deployed!"
           description: |
-            Version: ${{ steps.bump.outputs.new_tag }}
-            Commit: ${{ github.event.head_commit.url }}
-          footer: "<t:${{ steps.ts.outputs.timestamp }}:R>"
+            Version `${{ steps.bump.outputs.new_tag }}`
+          color: 0x00ff00
